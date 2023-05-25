@@ -153,13 +153,14 @@ def generate_graph(gtfs_feed,
     return G
 
 
-def plot_graph(G, space="L", back_map=False, MAPS_API_KEY=None, color_by="", export_name=""):
+def plot_graph(G, space="L", back_map=False, MAPS_API_KEY=None, color_by="",edge_color_by="", export_name=""):
     '''Plots a networkx graph. Arguments:
     -G: the nx graph
     -space: either "L" or "P" depending on which space you are plotting
     -back_map: either False (no map), "GMAPS" (for Google Maps) or "OSM" for OpenStreetMap
     -MAPS_API_KEY: a valid Google maps api key if back_map="GMAPS"
-    -color_by: string with the name of an attribute in G.nodes that will be used to color the nodes'''
+    -color_by: string with the name of an attribute in G.nodes that will be used to color the nodes
+    -edge_color_by: string with the name of an attribute in G.edges that will be used to color the nodes'''
         
     if back_map=="GMAPS":
         map_options = GMapOptions(lat=list(G.nodes(data=True))[0][1]["lat"], 
@@ -210,6 +211,11 @@ def plot_graph(G, space="L", back_map=False, MAPS_API_KEY=None, color_by="", exp
         graph.node_renderer.glyph = Circle(size=7,fill_color={'field': color_by, 'transform': mapper})
     else:
         graph.node_renderer.glyph = Circle(size=7)
+
+    if edge_color_by:
+        mapper = LinearColorMapper(palette=RdYlGn11)
+        graph.edge_renderer.glyph = MultiLine(line_width=4, line_alpha=.5, line_color={'field': edge_color_by, 'transform': mapper})
+   
     
     graph.node_renderer.selection_glyph = Circle(fill_color='blue')
     graph.node_renderer.hover_glyph = Circle(fill_color='red')
